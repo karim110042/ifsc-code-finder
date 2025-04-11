@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IFSC Code Finder</title>
+  <style>
+    body { font-family: Arial; text-align: center; background: #f0f0f0; padding: 50px; }
+    .card { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    input { padding: 10px; width: 100%; margin-bottom: 10px; }
+    button { padding: 10px 20px; background: black; color: white; border: none; border-radius: 5px; }
+    .result { text-align: left; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>IFSC Code Finder</h2>
+    <input id="ifsc" placeholder="Enter IFSC Code" />
+    <button onclick="findBank()">Find Bank Details</button>
+    <div id="result" class="result"></div>
+  </div>
+  <script>
+    function findBank() {
+      const ifsc = document.getElementById('ifsc').value.trim().toUpperCase();
+      const resultDiv = document.getElementById('result');
+      if (!ifsc) {
+        resultDiv.innerHTML = "<p style='color:red'>Please enter IFSC code.</p>";
+        return;
+      }
+      fetch(`https://ifsc.razorpay.com/${ifsc}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Invalid IFSC Code");
+          return res.json();
+        })
+        .then(data => {
+          resultDiv.innerHTML = `
+            <p><strong>Bank:</strong> ${data.BANK}</p>
+            <p><strong>Branch:</strong> ${data.BRANCH}</p>
+            <p><strong>Address:</strong> ${data.ADDRESS}</p>
+            <p><strong>City:</strong> ${data.CITY}</p>
+            <p><strong>State:</strong> ${data.STATE}</p>
+          `;
+        })
+        .catch(err => {
+          resultDiv.innerHTML = "<p style='color:red'>Invalid IFSC Code</p>";
+        });
+    }
+  </script>
+</body>
+</html>
